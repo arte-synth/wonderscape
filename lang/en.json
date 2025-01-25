@@ -1,0 +1,29 @@
+{
+    "WONDERSCAPE": {
+        "Settings": {
+            "ApiKey": {
+                "Name": "OpenAI API Key",
+                "Hint": "Your OpenAI API key for image generation"
+            }
+        },
+        "Dialog": {
+            "Title": "Wonderscape Scene Generator",
+            "Prompt": "Prompt",
+            "Buttons": {
+                "Generate": "Generate",
+                "CreateScene": "Create New Scene"
+            }
+        },
+        "Notifications": {
+            "NoApiKey": "Please configure your OpenAI API key in module settings",
+            "Generating": "Generating image...",
+            "GenerateError": "Failed to generate image",
+            "DisplayError": "Failed to display generated image",
+            "CreateSuccess": "New scene created successfully!",
+            "CreateError": "Failed to create scene"
+        },
+        "Scenes": {
+            "DefaultName": "Generated Scene"
+        }
+    }
+} 

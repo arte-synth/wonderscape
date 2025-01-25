@@ -1,0 +1,33 @@
+{
+  "id": "wonderscape",
+  "title": "Wonderscape",
+  "description": "Generate imaginative scenes using AI",
+  "version": "1.0.0",
+  "compatibility": {
+    "minimum": "10",
+    "verified": "12"
+  },
+  "authors": [
+    {
+      "name": "arte-synth",
+      "email": "arte.synth@gmail.com",
+      "url": "https://ko-fi.com/arte_synth"
+    }
+  ],
+  "scripts": [
+    "scripts/scene-generator.js"
+  ],
+  "styles": [
+    "styles/scene-generator.css"
+  ],
+  "languages": [
+    {
+      "lang": "en",
+      "name": "English",
+      "path": "lang/en.json"
+    }
+  ],
+  "url": "https://github.com/arte-synth/wonderscape",
+  "manifest": "",
+  "download": ""
+} 
