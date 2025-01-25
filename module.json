@@ -1,7 +1,7 @@
 {
   "id": "wonderscape",
   "title": "Wonderscape",
-  "description": "Generate scenes for Theater of the Mind using OpenAI",
+  "description": "A module for Theater of the Mind scene generation, using OpenAI",
   "version": "1.0.0",
   "compatibility": {
     "minimum": "10",
