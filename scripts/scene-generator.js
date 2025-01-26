@@ -119,27 +119,29 @@ class SceneGeneratorApp extends Application {
             // Upload to Foundry's server using the world's scenes directory
             const uploadResponse = await FilePicker.upload('data', worldPath, imageFile);
             
+            // Fix the path to work in both local and hosted environments
+            const imagePath = uploadResponse.path.replace(/^\/https:\/\//, 'https://');
+            
             // Create new scene using the uploaded file path
             const scene = await Scene.create({
                 name: game.i18n.localize("WONDERSCAPE.Scenes.DefaultName"),
-                img: uploadResponse.path.startsWith('/') ? uploadResponse.path : '/' + uploadResponse.path,
+                img: imagePath,
                 width: 1024,
                 height: 1024,
                 backgroundColor: "#000000",
                 padding: 0.25,
                 initial: {
-                    x: null,      // null values will center the view
+                    x: null,
                     y: null,
                     scale: 1
                 },
-                // Center the scene in viewport
                 viewPosition: {
-                    x: 512,      // half of width
-                    y: 512,      // half of height
+                    x: 512,
+                    y: 512,
                     scale: 1
                 },
                 background: {
-                    src: uploadResponse.path.startsWith('/') ? uploadResponse.path : '/' + uploadResponse.path,
+                    src: imagePath,
                     tint: null
                 },
                 grid: {
