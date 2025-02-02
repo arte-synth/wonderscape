@@ -1,0 +1,216 @@
+.scene-generator-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1em;
+    height: 100%;
+    padding: 1em;
+}
+
+.scene-generator-form .form-group {
+    margin-bottom: 0.5em;  /* Reduce default bottom margin */
+}
+
+/* Reduce vertical spacing between form groups */
+.scene-generator-form .form-group + .form-group {
+    margin-top: 0;  /* Remove negative margin, use smaller bottom margins instead */
+}
+
+.scene-generator-form .form-group label {
+    display: inline-block;
+    width: 80px;
+    vertical-align: top;
+    padding-top: 0.5em;
+}
+
+.scene-generator-form .form-group textarea {
+    display: inline-block;
+    width: calc(100% - 90px);
+    margin-left: 5px;
+    min-height: 60px;  /* Reduce textarea height */
+}
+
+.scene-generator-form .form-group.scene-name .input-with-button {
+    display: inline-flex;
+    width: calc(100% - 90px);
+    margin-left: 5px;
+    gap: 5px;
+    align-items: center;  /* Ensure vertical alignment */
+}
+
+.scene-generator-form .form-group.scene-name input {
+    flex: 1;
+    height: 36px;  /* Match button height */
+    line-height: 36px;
+    margin: 0;
+    padding: 0 8px;
+}
+
+.scene-generator-form .form-group.scene-name button {
+    width: 36px;
+    height: 36px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0;
+}
+
+.scene-generator-form .form-group.buttons {
+    flex-direction: row;
+    justify-content: space-between;
+    padding: 0;
+    margin: 0;  /* Remove vertical margins */
+}
+
+.scene-generator-form textarea {
+    width: 100%;
+    min-height: 80px;
+    resize: vertical;
+    padding: 0.5em;
+}
+
+.scene-generator-form .button-group {
+    display: flex;
+    gap: 1em;
+    align-items: center;
+}
+
+.scene-generator-form .button-group button {
+    flex: 1;
+    margin: 0;
+    padding: 0.5em;
+    min-width: 150px;
+    height: 36px;
+    font-size: 14px;
+    border: 1px solid #000;
+    border-radius: 3px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.scene-generator-form button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+#image-container {
+    flex: 1;
+    min-height: 0;
+    overflow: auto;
+    border: 1px solid #ccc;
+    padding: 0.5em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#generated-image, #generated-npc-image {
+    max-height: 400px;
+    object-fit: contain;
+    width: auto;
+    max-width: 100%;
+    margin: 0 auto;
+    display: block;
+    border: none !important;  /* Force remove any borders */
+    outline: none !important;  /* Remove any outlines too */
+}
+
+/* Make the window background darker for better contrast */
+.scene-generator-window {
+    background: rgba(0, 0, 0, 0.8);
+}
+
+#create-scene-button {
+    background: #2a5bb9;
+    color: white;
+}
+
+#create-scene-button:hover {
+    background: #1a4ba9;
+}
+
+/* NPC Generator specific styles */
+.npc-generator-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1em;
+    height: 100%;
+    padding: 1em;
+}
+
+#npc-result-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    gap: 1em;
+    flex: 1;
+    min-height: 0;
+}
+
+#npc-portrait-container {
+    flex: 0 0 auto;
+    height: 256px;
+    border: 1px solid #ccc;
+    padding: 0.5em;
+    display: flex;
+    align-items: center;
+}
+
+#generated-npc-portrait {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+}
+
+#npc-description {
+    padding: 1em;
+    margin-top: 1em;
+    background: rgba(0, 0, 0, 0.05);
+    border-radius: 5px;
+    white-space: pre-wrap;
+    font-family: var(--font-primary);
+}
+
+#npc-description h3 {
+    color: #2a5bb9;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    margin: 1em 0 0.5em 0;
+    padding-bottom: 0.2em;
+}
+
+#npc-description h3:first-child {
+    margin-top: 0;
+}
+
+#npc-description ul {
+    margin: 0.5em 0;
+    padding-left: 1.5em;
+}
+
+#npc-description li {
+    margin: 0.25em 0;
+}
+
+.form-group.image-container {
+    max-height: 460px;
+    overflow-y: auto;
+    text-align: center;
+    margin-top: 0.25em;  /* Reduce top margin further */
+}
+
+.portrait-container {
+    text-align: center;
+    padding: 1em;
+    margin-top: 1em;
+    border-radius: 5px;
+}
+
+.portrait-container img {
+    max-height: 400px;
+    object-fit: contain;
+    width: auto;
+    max-width: 100%;
+    margin: 0 auto;
+    border-radius: 5px;
+}

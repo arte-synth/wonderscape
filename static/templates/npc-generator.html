@@ -1,0 +1,46 @@
+<form class="scene-generator-form">
+    <div class="form-group">
+        <label for="npc-prompt-input">{{localize "WONDERSCAPE.Dialog.NPCPrompt"}}:</label>
+        <textarea id="npc-prompt-input" name="prompt" rows="4"></textarea>
+    </div>
+    <div class="form-group scene-name">
+        <label for="npc-name-input">{{localize "WONDERSCAPE.Dialog.NPCName"}}:</label>
+        <div class="input-with-button">
+            <input type="text" id="npc-name-input" name="npc-name">
+            <button type="button" id="generate-npc-name-button" title="{{localize "WONDERSCAPE.Dialog.Buttons.GenerateNPCName"}}">
+                <i class="fas fa-magic"></i>
+            </button>
+        </div>
+    </div>
+    <div class="form-group buttons">
+        <button type="button" id="generate-npc-button">
+            <i class="fas fa-magic"></i> {{localize "WONDERSCAPE.Dialog.Buttons.GenerateNPC"}}
+        </button>
+        <button type="button" id="create-npc-button" disabled>
+            <i class="fas fa-book-user"></i> {{localize "WONDERSCAPE.Dialog.Buttons.CreateNPC"}}
+        </button>
+    </div>
+    <div class="portrait-container" style="display: none;">
+        <img id="generated-npc-image">
+    </div>
+    <div id="npc-personality-traits" style="display: none;">
+        <h3>{{localize "WONDERSCAPE.Dialog.NPCPersonalityTraits"}}</h3>
+        <p id="npc-personality-traits-text"></p>
+    </div>
+    <div id="npc-background" style="display: none;">
+        <h3>{{localize "WONDERSCAPE.Dialog.NPCBackground"}}</h3>
+        <p id="npc-background-text"></p>
+    </div>
+    <div id="npc-motivations" style="display: none;">
+        <h3>{{localize "WONDERSCAPE.Dialog.NPCMotivations"}}</h3>
+        <p id="npc-motivations-text"></p>
+    </div>
+    <div id="npc-physical-appearance" style="display: none;">
+        <h3>{{localize "WONDERSCAPE.Dialog.NPCPhysicalAppearance"}}</h3>
+        <p id="npc-physical-appearance-text"></p>
+    </div>
+    <div id="npc-quirks-and-mannerisms" style="display: none;">
+        <h3>{{localize "WONDERSCAPE.Dialog.NPCQuirksAndMannerisms"}}</h3>
+        <p id="npc-quirks-and-mannerisms-text"></p>
+    </div>
+</form> 

@@ -1,8 +1,8 @@
 {
   "id": "wonderscape",
   "title": "Wonderscape",
-  "description": "A module for Theater of the Mind scene generation, using OpenAI",
-  "version": "1.0.1",
+  "description": "A module for Theater of the Mind scene generation and NPC generation, using OpenAI",
+  "version": "1.1.0",
   "compatibility": {
     "minimum": "10",
     "verified": "12"
@@ -14,8 +14,9 @@
       "url": "https://ko-fi.com/arte_synth"
     }
   ],
-  "scripts": [
-    "scripts/scene-generator.js"
+  "esmodules": [
+    "vendor.mjs",
+    "wonderscape.mjs"
   ],
   "styles": [
     "styles/scene-generator.css"
