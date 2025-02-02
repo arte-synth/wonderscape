@@ -94,11 +94,13 @@ export class NPCGeneratorApp extends Application {
         ui.notifications.info(game.i18n.localize("WONDERSCAPE.Notifications.GeneratingNPCDescription"));
         
         const npcName = this.element.find('#npc-name-input').val()?.trim();
+        
         const descriptionResponse = await client.beta.chat.completions.parse({
             model: "gpt-4o-mini",
             messages: [{
                 role: "user",
-                content: `Create a detailed NPC description for ${npcName ? `${npcName}, who is ` : 'a character '}described as: ${prompt}
+                content: `${prompt ? 'Answer in the same language as this description:' : ''}
+                Create a detailed NPC description for ${npcName ? `${npcName}, who is ` : 'a character '}described as: ${prompt}
 
                 For each category below, provide 3-4 concise bullet points:
                 1. Personality traits - key aspects of their character
@@ -113,8 +115,6 @@ export class NPCGeneratorApp extends Application {
         });
 
         const description = descriptionResponse.choices[0].message.parsed;
-        
-        // Format the description with headers
         return description;
     }
 
@@ -176,8 +176,10 @@ export class NPCGeneratorApp extends Application {
             ui.notifications.info(game.i18n.localize("WONDERSCAPE.Notifications.GeneratingNPCName"));
             
             const client = openAIClient(apiKey);
+            
             const content = prompt?.trim() 
-                ? `Analyze this NPC description and create a fitting name for the character:
+                ? `Answer in the same language as this description:
+                   Analyze this NPC description and create a fitting name for the character:
                    "${prompt}"
                    
                    Guidelines:
