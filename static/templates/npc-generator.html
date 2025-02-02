@@ -1,0 +1,14 @@
+<form class="scene-generator-form">
+    <div class="form-group">
+        <label for="npc-prompt-input">{{localize "WONDERSCAPE.Dialog.NPCPromptLabel"}}</label>
+        <input type="text" id="npc-prompt-input" name="prompt">
+    </div>
+    <div class="form-group buttons">
+        <button type="button" id="generate-npc-button">{{localize "WONDERSCAPE.Dialog.GenerateNPCButton"}}</button>
+        <button type="button" id="create-npc-button" disabled>{{localize "WONDERSCAPE.Dialog.CreateNPCButton"}}</button>
+    </div>
+    <div class="form-group">
+        <img id="generated-npc-image" style="display: none; width: 100%; margin-top: 10px;">
+        <div id="npc-description" style="display: none; margin-top: 10px; white-space: pre-wrap;"></div>
+    </div>
+</form> 

@@ -1,0 +1,33 @@
+{
+  "name": "wonderscape",
+  "version": "1.0.1",
+  "description": "A module for Theater of the Mind scene generation, using OpenAI",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "vite build",
+    "watch": "vite build --watch",
+    "clean": "rimraf dist",
+    "predist": "npm run clean && npm run build",
+    "dist": "cd dist && zip -r ../wonderscape.zip *"
+  },
+  "dependencies": {
+    "openai": "^4.82.0",
+    "zod": "^3.24.1"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.24",
+    "copyfiles": "^2.4.1",
+    "esbuild": "^0.20.1",
+    "rimraf": "^5.0.10",
+    "typescript": "^5.3.3",
+    "vite": "^5.1.4",
+    "vite-plugin-checker": "^0.6.4",
+    "vite-plugin-static-copy": "^1.0.1",
+    "vite-tsconfig-paths": "^4.3.1"
+  },
+  "main": "webpack.config.js",
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}

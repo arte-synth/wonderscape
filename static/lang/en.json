@@ -9,9 +9,13 @@
         "Dialog": {
             "Title": "Wonderscape Scene Generator",
             "Prompt": "Prompt",
+            "NPCTitle": "Wonderscape NPC Generator",
+            "NPCPrompt": "NPC Description",
             "Buttons": {
                 "Generate": "Generate",
-                "CreateScene": "Create New Scene"
+                "CreateScene": "Create New Scene",
+                "GenerateNPC": "Generate NPC",
+                "CreateNPC": "Create Journal Entry"
             }
         },
         "Notifications": {
@@ -20,10 +24,17 @@
             "GenerateError": "Failed to generate image",
             "DisplayError": "Failed to display generated image",
             "CreateSuccess": "New scene created successfully!",
-            "CreateError": "Failed to create scene"
+            "CreateError": "Failed to create scene",
+            "GeneratingNPC": "Generating NPC portrait and description...",
+            "GenerateNPCError": "Failed to generate NPC",
+            "CreateNPCSuccess": "New NPC journal entry created!",
+            "CreateNPCError": "Failed to create NPC journal entry"
         },
         "Scenes": {
             "DefaultName": "Generated Scene"
+        },
+        "Journal": {
+            "DefaultNPCName": "Generated NPC"
         }
     }
 } 

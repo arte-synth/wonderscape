@@ -14,8 +14,9 @@
       "url": "https://ko-fi.com/arte_synth"
     }
   ],
-  "scripts": [
-    "scripts/scene-generator.js"
+  "esmodules": [
+    "vendor.mjs",
+    "wonderscape.mjs"
   ],
   "styles": [
     "styles/scene-generator.css"

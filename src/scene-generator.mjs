@@ -1,3 +1,5 @@
+import { openAIClient, ImageResponseSchema } from './openai-config.mjs';
+
 Hooks.once('init', () => {
     game.settings.register('wonderscape', 'openai-api-key', {
         name: game.i18n.localize("WONDERSCAPE.Settings.ApiKey.Name"),
@@ -10,7 +12,7 @@ Hooks.once('init', () => {
     });
 });
 
-class SceneGeneratorApp extends Application {
+export class SceneGeneratorApp extends Application {
     static get defaultOptions() {
         return mergeObject(super.defaultOptions, {
             id: 'scene-generator',
@@ -47,34 +49,20 @@ class SceneGeneratorApp extends Application {
             
             ui.notifications.info(game.i18n.localize("WONDERSCAPE.Notifications.Generating"));
             
-            const response = await fetch('https://api.openai.com/v1/images/generations', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${apiKey}`
-                },
-                body: JSON.stringify({
-                    model: "dall-e-3",
-                    prompt: prompt,
-                    n: 1,
-                    size: "1024x1024",
-                    response_format: "b64_json"
-                })
+            const client = openAIClient(apiKey);
+            const response = await client.images.generate({
+                model: "dall-e-3",
+                prompt: prompt,
+                n: 1,
+                size: "1024x1024",
+                response_format: "b64_json"
             });
 
-            if (!response.ok) {
-                const error = await response.json();
-                throw new Error(error.error?.message || game.i18n.localize("WONDERSCAPE.Notifications.GenerateError"));
-            }
-
-            const data = await response.json();
-            const imageData = data.data[0].b64_json;
+            const validatedResponse = ImageResponseSchema.parse(response);
+            this._currentImageData = validatedResponse.data[0].b64_json;
+            console.log('Image data received:', this._currentImageData.slice(0, 50) + '...');
             
-            // Store the base64 data for later use
-            this._currentImageData = imageData;
-            
-            // Display the image
-            await this._displayImage(imageData);
+            await this._displayImage(this._currentImageData);
             
         } catch (error) {
             console.error('Error generating image:', error);
@@ -84,47 +72,42 @@ class SceneGeneratorApp extends Application {
         }
     }
 
-    async _displayImage(base64Data) {
-        try {
-            const imageUrl = `data:image/png;base64,${base64Data}`;
-            
-            const imageContainer = this.element.find('#image-container');
-            const generatedImage = this.element.find('#generated-image');
-            const createSceneButton = this.element.find('#create-scene-button');
-            
-            generatedImage.attr('src', imageUrl);
-            imageContainer.show();
-            createSceneButton.prop('disabled', false);
-            
-        } catch (error) {
-            console.error('Error displaying image:', error);
-            ui.notifications.error(game.i18n.localize("WONDERSCAPE.Notifications.DisplayError"));
-        }
+    async _displayImage(imageData) {
+        const img = this.element.find('#generated-image');
+        console.log('Image element:', img);
+        
+        // Make sure we're setting a complete data URL
+        img.attr('src', `data:image/png;base64,${imageData}`);
+        
+        // Force a reflow
+        img.hide().show();
+        
+        this.element.find('#create-scene-button').prop('disabled', false);
     }
 
     async _onCreateScene(event) {
         event.preventDefault();
-        
+        if (!this._currentImageData) {
+            ui.notifications.error(game.i18n.localize("WONDERSCAPE.Notifications.NoImage"));
+            return;
+        }
+
         try {
-            // Convert base64 to blob
-            const response = await fetch(`data:image/png;base64,${this._currentImageData}`);
-            const blob = await response.blob();
-            
-            // Create a File object from the blob
-            const imageFile = new File([blob], `generated-scene-${Date.now()}.png`, { type: 'image/png' });
+            const imageBlob = await fetch(`data:image/png;base64,${this._currentImageData}`).then(r => r.blob());
+            const file = new File([imageBlob], "scene-background.png", { type: "image/png" });
             
             // Get the current world's scenes directory path
             const worldPath = `worlds/${game.world.id}/scenes`;
             
             // Upload to Foundry's server using the world's scenes directory
-            const uploadResponse = await FilePicker.upload('data', worldPath, imageFile);
+            const uploadResponse = await FilePicker.upload('data', worldPath, file);
             
             // Fix the path to work in both local and hosted environments
             const imagePath = uploadResponse.path.replace(/^\/https:\/\//, 'https://');
             
-            // Create new scene using the uploaded file path
+            // Create scene
             const scene = await Scene.create({
-                name: game.i18n.localize("WONDERSCAPE.Scenes.DefaultName"),
+                name: this.element.find('#prompt-input').val() || "Generated Scene",
                 img: imagePath,
                 width: 1024,
                 height: 1024,
@@ -154,9 +137,12 @@ class SceneGeneratorApp extends Application {
                 darkness: 0
             });
 
-            ui.notifications.info(game.i18n.localize("WONDERSCAPE.Notifications.CreateSuccess"));
+            // Upload the image
+            await scene.createThumbnail();
             
-            this.close();
+            ui.notifications.info(game.i18n.localize("WONDERSCAPE.Notifications.SceneCreated"));
+            
+            // Render the scene config sheet
             scene.sheet.render(true);
             
         } catch (error) {
@@ -165,11 +151,3 @@ class SceneGeneratorApp extends Application {
         }
     }
 }
-
-Hooks.on('renderSceneDirectory', (entries, html) => {
-    const button = $(`<button class="cc-sidebar-button" type="button">🤖 Generate Scene</button>`);
-    button.on("click", () => {
-        new SceneGeneratorApp().render(true);
-    });
-    html.find(".directory-header .action-buttons").append(button);
-}); 

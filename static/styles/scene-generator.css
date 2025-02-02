@@ -1,0 +1,150 @@
+.scene-generator-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1em;
+    height: 100%;
+    padding: 1em;
+}
+
+.scene-generator-form .form-group {
+    margin-bottom: 1em;
+}
+
+.scene-generator-form .form-group label {
+    display: inline-block;
+    width: 80px;
+    vertical-align: top;
+    padding-top: 0.5em;
+}
+
+.scene-generator-form .form-group textarea {
+    display: inline-block;
+    width: calc(100% - 90px);
+    margin-left: 5px;
+}
+
+.scene-generator-form .form-group.buttons {
+    flex-direction: row;
+    justify-content: space-between;
+    padding: 0;
+    margin: 1em 0;
+}
+
+.scene-generator-form textarea {
+    width: 100%;
+    min-height: 80px;
+    resize: vertical;
+    padding: 0.5em;
+}
+
+.scene-generator-form .button-group {
+    display: flex;
+    gap: 1em;
+    align-items: center;
+}
+
+.scene-generator-form .button-group button {
+    flex: 1;
+    margin: 0;
+    padding: 0.5em;
+    min-width: 150px;
+    height: 36px;
+    font-size: 14px;
+    border: 1px solid #000;
+    border-radius: 3px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.scene-generator-form button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+#image-container {
+    flex: 1;
+    min-height: 0;
+    overflow: auto;
+    border: 1px solid #ccc;
+    padding: 0.5em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#generated-image, #generated-npc-image {
+    max-height: 400px;
+    object-fit: contain;
+    width: auto;
+    max-width: 100%;
+    margin: 0 auto;
+    display: block;
+}
+
+/* Make the window background darker for better contrast */
+.scene-generator-window {
+    background: rgba(0, 0, 0, 0.8);
+}
+
+#create-scene-button {
+    background: #2a5bb9;
+    color: white;
+}
+
+#create-scene-button:hover {
+    background: #1a4ba9;
+}
+
+/* NPC Generator specific styles */
+.npc-generator-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1em;
+    height: 100%;
+    padding: 1em;
+}
+
+#npc-result-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1em;
+    flex: 1;
+    min-height: 0;
+}
+
+#npc-portrait-container {
+    flex: 0 0 auto;
+    height: 256px;
+    border: 1px solid #ccc;
+    padding: 0.5em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#generated-npc-portrait {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+}
+
+#npc-description-container {
+    flex: 1;
+    overflow-y: auto;
+    border: 1px solid #ccc;
+    padding: 1em;
+    background: rgba(0, 0, 0, 0.1);
+}
+
+#npc-description {
+    background: rgba(0, 0, 0, 0.05);
+    padding: 1em;
+    border-radius: 5px;
+}
+
+.form-group.image-container {
+    max-height: 420px;
+    overflow-y: auto;
+    text-align: center;
+}
