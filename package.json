@@ -1,6 +1,6 @@
 {
   "name": "wonderscape",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "description": "A module for Theater of the Mind scene generation, using OpenAI",
   "private": true,
   "type": "module",
