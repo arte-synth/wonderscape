@@ -3,6 +3,15 @@
         <label for="prompt-input">{{localize "WONDERSCAPE.Dialog.Prompt"}}:</label>
         <textarea id="prompt-input" name="prompt" rows="4"></textarea>
     </div>
+    <div class="form-group scene-name">
+        <label for="scene-name-input">{{localize "WONDERSCAPE.Dialog.SceneName"}}:</label>
+        <div class="input-with-button">
+            <input type="text" id="scene-name-input" name="scene-name">
+            <button type="button" id="generate-name-button" title="{{localize "WONDERSCAPE.Dialog.Buttons.GenerateName"}}">
+                <i class="fas fa-magic"></i>
+            </button>
+        </div>
+    </div>
     <div class="form-group buttons">
         <button type="button" id="generate-button">
             <i class="fas fa-magic"></i> {{localize "WONDERSCAPE.Dialog.Buttons.Generate"}}

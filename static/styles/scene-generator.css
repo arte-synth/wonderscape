@@ -7,7 +7,12 @@
 }
 
 .scene-generator-form .form-group {
-    margin-bottom: 1em;
+    margin-bottom: 0.5em;  /* Reduce default bottom margin */
+}
+
+/* Reduce vertical spacing between form groups */
+.scene-generator-form .form-group + .form-group {
+    margin-top: 0;  /* Remove negative margin, use smaller bottom margins instead */
 }
 
 .scene-generator-form .form-group label {
@@ -21,13 +26,40 @@
     display: inline-block;
     width: calc(100% - 90px);
     margin-left: 5px;
+    min-height: 60px;  /* Reduce textarea height */
+}
+
+.scene-generator-form .form-group.scene-name .input-with-button {
+    display: inline-flex;
+    width: calc(100% - 90px);
+    margin-left: 5px;
+    gap: 5px;
+    align-items: center;  /* Ensure vertical alignment */
+}
+
+.scene-generator-form .form-group.scene-name input {
+    flex: 1;
+    height: 36px;  /* Match button height */
+    line-height: 36px;
+    margin: 0;
+    padding: 0 8px;
+}
+
+.scene-generator-form .form-group.scene-name button {
+    width: 36px;
+    height: 36px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0;
 }
 
 .scene-generator-form .form-group.buttons {
     flex-direction: row;
     justify-content: space-between;
     padding: 0;
-    margin: 1em 0;
+    margin: 0;  /* Remove vertical margins */
 }
 
 .scene-generator-form textarea {
@@ -80,6 +112,8 @@
     max-width: 100%;
     margin: 0 auto;
     display: block;
+    border: none !important;  /* Force remove any borders */
+    outline: none !important;  /* Remove any outlines too */
 }
 
 /* Make the window background darker for better contrast */
@@ -144,7 +178,8 @@
 }
 
 .form-group.image-container {
-    max-height: 420px;
+    max-height: 460px;
     overflow-y: auto;
     text-align: center;
+    margin-top: 0.25em;  /* Reduce top margin further */
 }

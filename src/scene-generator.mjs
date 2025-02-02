@@ -1,4 +1,4 @@
-import { openAIClient, ImageResponseSchema } from './openai-config.mjs';
+import { openAIClient, ImageResponseSchema, ChatResponseSchema } from './openai-config.mjs';
 
 Hooks.once('init', () => {
     game.settings.register('wonderscape', 'openai-api-key', {
@@ -29,6 +29,7 @@ export class SceneGeneratorApp extends Application {
         super.activateListeners(html);
         html.find('#generate-button').click(this._onGenerate.bind(this));
         html.find('#create-scene-button').click(this._onCreateScene.bind(this));
+        html.find('#generate-name-button').click(this._onGenerateName.bind(this));
     }
 
     async _onGenerate(event) {
@@ -85,6 +86,76 @@ export class SceneGeneratorApp extends Application {
         this.element.find('#create-scene-button').prop('disabled', false);
     }
 
+    async _onGenerateName(event) {
+        event.preventDefault();
+        const button = $(event.currentTarget);
+        const nameInput = this.element.find('#scene-name-input');
+        const currentName = nameInput.val()?.trim();
+        const prompt = this.element.find('#prompt-input').val();
+        const apiKey = game.settings.get('wonderscape', 'openai-api-key');
+        
+        if (!apiKey) {
+            ui.notifications.error(game.i18n.localize("WONDERSCAPE.Notifications.NoApiKey"));
+            return;
+        }
+        
+        try {
+            button.prop('disabled', true);
+            ui.notifications.info(game.i18n.localize("WONDERSCAPE.Notifications.GeneratingName"));
+            
+            const client = openAIClient(apiKey);
+            const content = prompt?.trim() 
+                ? `Analyze this scene description and create a short, evocative name (2-4 words) for its main subject:
+                   "${prompt}"
+                   
+                   Guidelines:
+                   1. Identify the main subject (e.g., tower, forest, castle, cave)
+                   2. Consider the environment and atmosphere
+                   3. Create a name that captures the subject's unique characteristics
+                   4. Do not use quotes in the name
+                   
+                   Example inputs and outputs:
+                   "A dark tower rising from misty mountains" -> Shadowspire Peak
+                   "An ancient forest with glowing mushrooms" -> Luminous Grove
+                   "A bustling marketplace in a desert city" -> Saffron Bazaar`
+                : `Create a short, evocative name (2-4 words) for a random fantasy location.${
+                    currentName ? `\n\nCurrent name is "${currentName}" - please generate a different name.` : ''}
+                   
+                   Guidelines:
+                   1. Choose an interesting location type
+                   2. Consider its atmosphere and unique features
+                   3. Do not use quotes in the name
+                   ${currentName ? '4. Make sure the new name is different from the current one' : ''}
+                   
+                   Example outputs:
+                   - Whispering Citadel
+                   - Stormweave Sanctuary
+                   - Crystalline Depths`;
+            
+            const response = await client.chat.completions.create({
+                model: "gpt-4",
+                messages: [{
+                    role: "user",
+                    content
+                }],
+                temperature: 0.8
+            });
+
+            const validatedResponse = ChatResponseSchema.parse(response);
+            // Remove any quotes and trim whitespace
+            const generatedName = validatedResponse.choices[0].message.content
+                .replace(/["']/g, '')  // Remove quotes
+                .trim();
+            nameInput.val(generatedName);
+            
+        } catch (error) {
+            console.error('Error generating name:', error);
+            ui.notifications.error(error.message || game.i18n.localize("WONDERSCAPE.Notifications.GenerateNameError"));
+        } finally {
+            button.prop('disabled', false);
+        }
+    }
+
     async _onCreateScene(event) {
         event.preventDefault();
         if (!this._currentImageData) {
@@ -93,8 +164,21 @@ export class SceneGeneratorApp extends Application {
         }
 
         try {
+            // Get or generate scene name
+            const sceneName = this.element.find('#scene-name-input').val()?.trim() || 
+                `Generated Scene ${foundry.utils.randomID(6)}`;
+            
+            // Create a safe filename from the scene name
+            const safeFilename = sceneName
+                .toLowerCase()
+                .replace(/[^a-z0-9]+/g, '-')  // Replace non-alphanumeric chars with hyphens
+                .replace(/^-+|-+$/g, '')      // Remove leading/trailing hyphens
+                .substring(0, 50);            // Limit length
+            
+            const filename = `${safeFilename}-${foundry.utils.randomID(4)}.png`;
+            
             const imageBlob = await fetch(`data:image/png;base64,${this._currentImageData}`).then(r => r.blob());
-            const file = new File([imageBlob], "scene-background.png", { type: "image/png" });
+            const file = new File([imageBlob], filename, { type: "image/png" });
             
             // Get the current world's scenes directory path
             const worldPath = `worlds/${game.world.id}/scenes`;
@@ -107,7 +191,7 @@ export class SceneGeneratorApp extends Application {
             
             // Create scene
             const scene = await Scene.create({
-                name: this.element.find('#prompt-input').val() || "Generated Scene",
+                name: sceneName,
                 img: imagePath,
                 width: 1024,
                 height: 1024,
