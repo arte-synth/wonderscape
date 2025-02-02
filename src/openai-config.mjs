@@ -19,9 +19,9 @@ export const ChatResponseSchema = z.object({
 }); 
 
 export const NpcDescriptionSchema = zodResponseFormat(z.object({
-  personality_traits: z.string(),
-  background: z.string(),
-  motivations: z.string(),
-  physical_appearance: z.string(),
-  quirks_mannerisms: z.string()
+  personality_traits: z.array(z.string()),
+  background: z.array(z.string()),
+  motivations: z.array(z.string()),
+  physical_appearance: z.array(z.string()),
+  quirks_mannerisms: z.array(z.string())
 }), 'npc_description');

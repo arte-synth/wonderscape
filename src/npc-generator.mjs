@@ -99,12 +99,13 @@ export class NPCGeneratorApp extends Application {
             messages: [{
                 role: "user",
                 content: `Create a detailed NPC description for ${npcName ? `${npcName}, who is ` : 'a character '}described as: ${prompt}
-                Include:
-                - Personality traits
-                - Background
-                - Motivations
-                - Physical appearance
-                - Notable quirks or mannerisms
+
+                For each category below, provide 3-4 concise bullet points:
+                1. Personality traits - key aspects of their character
+                2. Background - important events or facts from their past
+                3. Motivations - what drives them and their goals
+                4. Physical appearance - distinctive visual features
+                5. Notable quirks and mannerisms - unique behaviors or habits
 
                 ${npcName ? 'Note: Use their name naturally throughout each section.' : ''}`
             }],
@@ -138,19 +139,23 @@ export class NPCGeneratorApp extends Application {
         const physicalAppearanceText = this.element.find('#npc-physical-appearance-text');
         const quirksAndMannerismsText = this.element.find('#npc-quirks-and-mannerisms-text');
 
-        // Set paragraph texts to json fields values
-        personalityTraitsText.html(description.personality_traits);
-        backgroundText.html(description.background);
-        motivationsText.html(description.motivations);
-        physicalAppearanceText.html(description.physical_appearance);
-        quirksAndMannerismsText.html(description.quirks_mannerisms);
+        // Set bullet points for each section
+        personalityTraitsText.html(this._formatBulletPoints(description.personality_traits));
+        backgroundText.html(this._formatBulletPoints(description.background));
+        motivationsText.html(this._formatBulletPoints(description.motivations));
+        physicalAppearanceText.html(this._formatBulletPoints(description.physical_appearance));
+        quirksAndMannerismsText.html(this._formatBulletPoints(description.quirks_mannerisms));
 
         // Show elements
         personalityTraits.show();
         background.show();
         motivations.show();
-        motivationsText.html(description.motivations);
         physicalAppearance.show();
+        quirksAndMannerisms.show();
+    }
+
+    _formatBulletPoints(points) {
+        return `<ul>${points.map(point => `<li>${point}</li>`).join('')}</ul>`;
     }
 
     async _onGenerateName(event) {
@@ -268,23 +273,23 @@ export class NPCGeneratorApp extends Application {
                         <img src="${imagePath}" style="display: block; margin: 0 auto 20px auto; max-width: 400px;" />
                         <div id="npc-personality-traits">
                             <h3>${game.i18n.localize("WONDERSCAPE.Dialog.NPCPersonalityTraits")}</h3>
-                            <p id="npc-personality-traits-text">${this._currentDescription.personality_traits}</p>
+                            ${this._formatBulletPoints(this._currentDescription.personality_traits)}
                         </div>
                         <div id="npc-background">
                             <h3>${game.i18n.localize("WONDERSCAPE.Dialog.NPCBackground")}</h3>
-                            <p id="npc-background-text">${this._currentDescription.background}</p>
+                            ${this._formatBulletPoints(this._currentDescription.background)}
                         </div>
                         <div id="npc-motivations">
                             <h3>${game.i18n.localize("WONDERSCAPE.Dialog.NPCMotivations")}</h3>
-                            <p id="npc-motivations-text">${this._currentDescription.motivations}</p>
+                            ${this._formatBulletPoints(this._currentDescription.motivations)}
                         </div>
                         <div id="npc-physical-appearance">
                             <h3>${game.i18n.localize("WONDERSCAPE.Dialog.NPCPhysicalAppearance")}</h3>
-                            <p id="npc-physical-appearance-text">${this._currentDescription.physical_appearance}</p>
+                            ${this._formatBulletPoints(this._currentDescription.physical_appearance)}
                         </div>
                         <div id="npc-quirks-and-mannerisms">
                             <h3>${game.i18n.localize("WONDERSCAPE.Dialog.NPCQuirksAndMannerisms")}</h3>
-                            <p id="npc-quirks-and-mannerisms-text">${this._currentDescription.quirks_mannerisms}</p>
+                            ${this._formatBulletPoints(this._currentDescription.quirks_mannerisms)}
                         </div>
                         `,
                         format: 1  // FORMAT.HTML = 1

@@ -183,6 +183,15 @@
     margin-top: 0;
 }
 
+#npc-description ul {
+    margin: 0.5em 0;
+    padding-left: 1.5em;
+}
+
+#npc-description li {
+    margin: 0.25em 0;
+}
+
 .form-group.image-container {
     max-height: 460px;
     overflow-y: auto;
