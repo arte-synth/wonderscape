@@ -141,7 +141,8 @@
 
 #npc-result-container {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
+    justify-content: center;
     gap: 1em;
     flex: 1;
     min-height: 0;
@@ -154,7 +155,6 @@
     padding: 0.5em;
     display: flex;
     align-items: center;
-    justify-content: center;
 }
 
 #generated-npc-portrait {
@@ -163,18 +163,24 @@
     object-fit: contain;
 }
 
-#npc-description-container {
-    flex: 1;
-    overflow-y: auto;
-    border: 1px solid #ccc;
+#npc-description {
     padding: 1em;
-    background: rgba(0, 0, 0, 0.1);
+    margin-top: 1em;
+    background: rgba(0, 0, 0, 0.05);
+    border-radius: 5px;
+    white-space: pre-wrap;
+    font-family: var(--font-primary);
 }
 
-#npc-description {
-    background: rgba(0, 0, 0, 0.05);
-    padding: 1em;
-    border-radius: 5px;
+#npc-description h3 {
+    color: #2a5bb9;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    margin: 1em 0 0.5em 0;
+    padding-bottom: 0.2em;
+}
+
+#npc-description h3:first-child {
+    margin-top: 0;
 }
 
 .form-group.image-container {
@@ -182,4 +188,20 @@
     overflow-y: auto;
     text-align: center;
     margin-top: 0.25em;  /* Reduce top margin further */
+}
+
+.portrait-container {
+    text-align: center;
+    padding: 1em;
+    margin-top: 1em;
+    border-radius: 5px;
+}
+
+.portrait-container img {
+    max-height: 400px;
+    object-fit: contain;
+    width: auto;
+    max-width: 100%;
+    margin: 0 auto;
+    border-radius: 5px;
 }

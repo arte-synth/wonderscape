@@ -1,4 +1,5 @@
 import OpenAI from 'openai';
+import { zodResponseFormat } from 'openai/helpers/zod';
 import { z } from 'zod';
 
 export const openAIClient = (apiKey) => new OpenAI({ apiKey, dangerouslyAllowBrowser: true });
@@ -16,3 +17,11 @@ export const ChatResponseSchema = z.object({
     })
   }))
 }); 
+
+export const NpcDescriptionSchema = zodResponseFormat(z.object({
+  personality_traits: z.string(),
+  background: z.string(),
+  motivations: z.string(),
+  physical_appearance: z.string(),
+  quirks_mannerisms: z.string()
+}), 'npc_description');

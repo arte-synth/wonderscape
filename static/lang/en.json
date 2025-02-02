@@ -11,14 +11,20 @@
             "Prompt": "Scene Description",
             "NPCTitle": "Wonderscape NPC Generator",
             "NPCPrompt": "NPC Description",
+            "NPCName": "NPC Name",
             "SceneName": "Scene Name",
             "Buttons": {
                 "Generate": "Generate Image",
                 "CreateScene": "Create Scene",
                 "GenerateNPC": "Generate NPC",
                 "CreateNPC": "Create Journal Entry",
-                "GenerateName": "Generate Name"
-            }
+                "GenerateNPCName": "Generate Name"
+            },
+            "NPCPersonalityTraits": "Personality Traits",
+            "NPCBackground": "Background",
+            "NPCMotivations": "Motivations",
+            "NPCPhysicalAppearance": "Physical Appearance",
+            "NPCQuirksAndMannerisms": "Quirks and Mannerisms"
         },
         "Notifications": {
             "NoApiKey": "Please set your OpenAI API key in module settings",
@@ -30,7 +36,14 @@
             "SceneCreated": "Scene created successfully",
             "CreateError": "Error creating scene",
             "GeneratingNPC": "Generating NPC portrait and description...",
+            "GeneratingNPCPortrait": "Generating NPC portrait...",
+            "GeneratingNPCDescription": "Generating NPC description...",
             "GenerateNPCError": "Failed to generate NPC",
+            "GenerateNPCPortraitError": "Failed to generate NPC portrait",
+            "GenerateNPCDescriptionError": "Failed to generate NPC description",
+            "GeneratingNPCName": "Generating NPC name...",
+            "GenerateNPCNameError": "Error generating NPC name",
+            "NPCCreated": "NPC journal entry created successfully!",
             "CreateNPCSuccess": "New NPC journal entry created!",
             "CreateNPCError": "Failed to create NPC journal entry"
         },

@@ -1,4 +1,4 @@
-import { openAIClient, ImageResponseSchema, ChatResponseSchema } from './openai-config.mjs';
+import { openAIClient, ImageResponseSchema, ChatResponseSchema, NpcDescriptionSchema } from './openai-config.mjs';
 
 export class NPCGeneratorApp extends Application {
     static get defaultOptions() {
@@ -17,6 +17,7 @@ export class NPCGeneratorApp extends Application {
         super.activateListeners(html);
         html.find('#generate-npc-button').click(this._onGenerate.bind(this));
         html.find('#create-npc-button').click(this._onCreateNPC.bind(this));
+        html.find('#generate-npc-name-button').click(this._onGenerateName.bind(this));
     }
 
     async _onGenerate(event) {
@@ -35,56 +36,190 @@ export class NPCGeneratorApp extends Application {
             button.prop('disabled', true);
             createNPCButton.prop('disabled', true);
             
-            ui.notifications.info(game.i18n.localize("WONDERSCAPE.Notifications.GeneratingNPC"));
-            
             const client = openAIClient(apiKey);
 
-            // Generate portrait
-            const imageResponse = await client.images.generate({
-                model: "dall-e-3",
-                prompt: `Portrait of ${prompt}`,
-                n: 1,
-                size: "1024x1024",
-                response_format: "b64_json"
+            // Start both generations in parallel
+            const portraitPromise = this._generatePortrait(client, prompt);
+            const descriptionPromise = this._generateDescription(client, prompt);
+            
+            // Handle results as they come in
+            portraitPromise.then(imageData => {
+                this._currentImageData = imageData;
+                this._displayPortrait(imageData);
+            }).catch(error => {
+                console.error('Error generating portrait:', error);
+                ui.notifications.error(game.i18n.localize("WONDERSCAPE.Notifications.GenerateNPCPortraitError"));
             });
-
-            const validatedImageResponse = ImageResponseSchema.parse(imageResponse);
-            this._currentImageData = validatedImageResponse.data[0].b64_json;
-
-            // Generate description
-            const descriptionResponse = await client.chat.completions.create({
-                model: "gpt-4",
-                messages: [{
-                    role: "user",
-                    content: `Create a detailed NPC description for a character described as: ${prompt}\n\nInclude:\n- Personality traits\n- Background\n- Motivations\n- Physical appearance\n- Notable quirks or mannerisms`
-                }],
-                temperature: 0.7
+            
+            descriptionPromise.then(description => {
+                this._currentDescription = description;
+                this._displayDescription(description);
+            }).catch(error => {
+                console.error('Error generating description:', error);
+                ui.notifications.error(game.i18n.localize("WONDERSCAPE.Notifications.GenerateNPCDescriptionError"));
             });
-
-            const validatedDescriptionResponse = ChatResponseSchema.parse(descriptionResponse);
-            this._currentDescription = validatedDescriptionResponse.choices[0].message.content;
-
-            // Display results
-            await this._displayResults(this._currentImageData, this._currentDescription);
+            
+            // Enable create button when both are done
+            Promise.all([portraitPromise, descriptionPromise])
+                .then(() => {
+                    createNPCButton.prop('disabled', false);
+                })
+                .finally(() => {
+                    button.prop('disabled', false);
+                });
             
         } catch (error) {
-            console.error('Error generating NPC:', error);
-            ui.notifications.error(error.message || game.i18n.localize("WONDERSCAPE.Notifications.GenerateNPCError"));
-        } finally {
+            console.error('Error starting generation:', error);
+            ui.notifications.error(game.i18n.localize("WONDERSCAPE.Notifications.GenerateNPCError"));
             button.prop('disabled', false);
         }
     }
 
-    async _displayResults(imageData, description) {
+    async _generatePortrait(client, prompt) {
+        ui.notifications.info(game.i18n.localize("WONDERSCAPE.Notifications.GeneratingNPCPortrait"));
+        
+        const imageResponse = await client.images.generate({
+            model: "dall-e-3",
+            prompt: `Portrait of ${prompt}. No text must present in the image.`,
+            n: 1,
+            size: "1024x1024",
+            response_format: "b64_json"
+        });
+
+        const validatedImageResponse = ImageResponseSchema.parse(imageResponse);
+        return validatedImageResponse.data[0].b64_json;
+    }
+
+    async _generateDescription(client, prompt) {
+        ui.notifications.info(game.i18n.localize("WONDERSCAPE.Notifications.GeneratingNPCDescription"));
+        
+        const npcName = this.element.find('#npc-name-input').val()?.trim();
+        const descriptionResponse = await client.beta.chat.completions.parse({
+            model: "gpt-4o-mini",
+            messages: [{
+                role: "user",
+                content: `Create a detailed NPC description for ${npcName ? `${npcName}, who is ` : 'a character '}described as: ${prompt}
+                Include:
+                - Personality traits
+                - Background
+                - Motivations
+                - Physical appearance
+                - Notable quirks or mannerisms
+
+                ${npcName ? 'Note: Use their name naturally throughout each section.' : ''}`
+            }],
+            response_format: NpcDescriptionSchema
+        });
+
+        const description = descriptionResponse.choices[0].message.parsed;
+        
+        // Format the description with headers
+        return description;
+    }
+
+    _displayPortrait(imageData) {
         const img = this.element.find('#generated-npc-image');
+        const portraitContainer = this.element.find('.portrait-container');
+        
         img.attr('src', `data:image/png;base64,${imageData}`);
-        img.show();
+        portraitContainer.show();
+    }
+
+    _displayDescription(description) {
+        const personalityTraits = this.element.find('#npc-personality-traits');
+        const background = this.element.find('#npc-background');
+        const motivations = this.element.find('#npc-motivations');
+        const physicalAppearance = this.element.find('#npc-physical-appearance');
+        const quirksAndMannerisms = this.element.find('#npc-quirks-and-mannerisms');
+
+        const personalityTraitsText = this.element.find('#npc-personality-traits-text');
+        const backgroundText = this.element.find('#npc-background-text');
+        const motivationsText = this.element.find('#npc-motivations-text');
+        const physicalAppearanceText = this.element.find('#npc-physical-appearance-text');
+        const quirksAndMannerismsText = this.element.find('#npc-quirks-and-mannerisms-text');
+
+        // Set paragraph texts to json fields values
+        personalityTraitsText.html(description.personality_traits);
+        backgroundText.html(description.background);
+        motivationsText.html(description.motivations);
+        physicalAppearanceText.html(description.physical_appearance);
+        quirksAndMannerismsText.html(description.quirks_mannerisms);
+
+        // Show elements
+        personalityTraits.show();
+        background.show();
+        motivations.show();
+        motivationsText.html(description.motivations);
+        physicalAppearance.show();
+    }
+
+    async _onGenerateName(event) {
+        event.preventDefault();
+        const button = $(event.currentTarget);
+        const nameInput = this.element.find('#npc-name-input');
+        const currentName = nameInput.val()?.trim();
+        const prompt = this.element.find('#npc-prompt-input').val();
+        const apiKey = game.settings.get('wonderscape', 'openai-api-key');
         
-        const descriptionElement = this.element.find('#npc-description');
-        descriptionElement.text(description);
-        descriptionElement.show();
+        if (!apiKey) {
+            ui.notifications.error(game.i18n.localize("WONDERSCAPE.Notifications.NoApiKey"));
+            return;
+        }
         
-        this.element.find('#create-npc-button').prop('disabled', false);
+        try {
+            button.prop('disabled', true);
+            ui.notifications.info(game.i18n.localize("WONDERSCAPE.Notifications.GeneratingNPCName"));
+            
+            const client = openAIClient(apiKey);
+            const content = prompt?.trim() 
+                ? `Analyze this NPC description and create a fitting name for the character:
+                   "${prompt}"
+                   
+                   Guidelines:
+                   1. Consider the character's role, personality, and background
+                   2. Match the name to their cultural context if provided
+                   3. Create a name that reflects their notable characteristics
+                   4. Include a title or epithet if appropriate
+                   5. Do not use quotes in the name
+                   
+                   Example inputs and outputs:
+                   "A wise old wizard who lives in a crystal tower" -> Aldrich the Crystalline Sage
+                   "A fierce orc warrior with ritual scars" -> Grokmar Scarfist
+                   "A mysterious elven merchant who never ages" -> Sylindria the Timeless`
+                : `Create a single name for a random fantasy NPC.${
+                    currentName ? `\n\nCurrent name is "${currentName}" - please generate a different name.` : ''}
+                   
+                   Guidelines:
+                   1. Include both name and title/epithet
+                   2. Consider their potential role or profession
+                   3. Do not use quotes in the name
+                   4. Return only one name, not a list
+                   ${currentName ? '4. Make sure the new name is different from the current one' : ''}
+                   
+                   Example output: Theron the Wandering Sage`;
+            
+            const response = await client.chat.completions.create({
+                model: "gpt-4",
+                messages: [{
+                    role: "user",
+                    content
+                }],
+                temperature: 0.8
+            });
+
+            const validatedResponse = ChatResponseSchema.parse(response);
+            const generatedName = validatedResponse.choices[0].message.content
+                .replace(/["']/g, '')  // Remove quotes
+                .replace(/^[-•*]\s*/, '')  // Remove any list markers
+                .trim();
+            nameInput.val(generatedName);
+            
+        } catch (error) {
+            console.error('Error generating name:', error);
+            ui.notifications.error(error.message || game.i18n.localize("WONDERSCAPE.Notifications.GenerateNPCNameError"));
+        } finally {
+            button.prop('disabled', false);
+        }
     }
 
     async _onCreateNPC(event) {
@@ -96,16 +231,68 @@ export class NPCGeneratorApp extends Application {
 
         try {
             const imageBlob = await fetch(`data:image/png;base64,${this._currentImageData}`).then(r => r.blob());
-            const file = new File([imageBlob], "npc-portrait.png", { type: "image/png" });
+            const npcName = this.element.find('#npc-name-input').val()?.trim() || 
+                `Generated NPC ${foundry.utils.randomID(6)}`;
             
-            // Create journal entry
+            // Create a safe filename from the NPC name
+            const safeFilename = npcName
+                .toLowerCase()
+                .replace(/[^a-z0-9]+/g, '-')
+                .replace(/^-+|-+$/g, '')
+                .substring(0, 50);
+            
+            const filename = `${safeFilename}-${foundry.utils.randomID(4)}.png`;
+            const file = new File([imageBlob], filename, { type: "image/png" });
+            
+            // Get the current world's assets directory path
+            const worldPath = `worlds/${game.world.id}/assets`;
+            
+            // Upload to Foundry's server
+            const uploadResponse = await FilePicker.upload('data', worldPath, file);
+            
+            // Fix the path to work in both local and hosted environments
+            const imagePath = uploadResponse.path.replace(/^\/https:\/\//, 'https://');
+            
+            // Create journal entry with proper page structure
             const journalEntry = await JournalEntry.create({
-                name: this.element.find('#npc-prompt-input').val() || "Generated NPC",
-                img: file,
-                content: `<img src="${file}" style="float: right; margin: 0 0 10px 10px; width: 300px;">\n\n${this._currentDescription}`
+                name: npcName,
+                pages: [{
+                    name: "Bio",
+                    type: "text",
+                    title: {
+                        show: true,
+                        level: 1
+                    },
+                    text: {
+                        content: `
+                        <img src="${imagePath}" style="display: block; margin: 0 auto 20px auto; max-width: 400px;" />
+                        <div id="npc-personality-traits">
+                            <h3>${game.i18n.localize("WONDERSCAPE.Dialog.NPCPersonalityTraits")}</h3>
+                            <p id="npc-personality-traits-text">${this._currentDescription.personality_traits}</p>
+                        </div>
+                        <div id="npc-background">
+                            <h3>${game.i18n.localize("WONDERSCAPE.Dialog.NPCBackground")}</h3>
+                            <p id="npc-background-text">${this._currentDescription.background}</p>
+                        </div>
+                        <div id="npc-motivations">
+                            <h3>${game.i18n.localize("WONDERSCAPE.Dialog.NPCMotivations")}</h3>
+                            <p id="npc-motivations-text">${this._currentDescription.motivations}</p>
+                        </div>
+                        <div id="npc-physical-appearance">
+                            <h3>${game.i18n.localize("WONDERSCAPE.Dialog.NPCPhysicalAppearance")}</h3>
+                            <p id="npc-physical-appearance-text">${this._currentDescription.physical_appearance}</p>
+                        </div>
+                        <div id="npc-quirks-and-mannerisms">
+                            <h3>${game.i18n.localize("WONDERSCAPE.Dialog.NPCQuirksAndMannerisms")}</h3>
+                            <p id="npc-quirks-and-mannerisms-text">${this._currentDescription.quirks_mannerisms}</p>
+                        </div>
+                        `,
+                        format: 1  // FORMAT.HTML = 1
+                    }
+                }]
             });
 
-            ui.notifications.info(game.i18n.localize("WONDERSCAPE.Notifications.NPCCreated"));
+            ui.notifications.info(game.i18n.localize("WONDERSCAPE.Notifications.CreateNPCSuccess"));
             
             // Open the journal entry
             journalEntry.sheet.render(true);
